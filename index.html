@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <title>Fortune 🥠 fortune.rixx.de</title>
+<style>
+body {
+  height: calc(100vh - 20px);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+footer {
+  text-align: center;
+  border-top: 1px solid #ccc;
+  padding-top: 6px;
+  color: #666;
+}
+main {
+  text-align: center;
+}
+#intro {
+  font-size: 24px;
+  padding-top: 5%;
+}
+#intro select {
+  font-size: 24px;
+}
+#intro button {
+  font-size: 28px;
+  background: white;
+  cursor: pointer;
+  border: none;
+}
+#quote {
+  padding-top: 10%;
+  font-size: 40px;
+}
+#quote small {
+  font-size: 20px;
+}
+</style>
+
+    <script>
+      const knownData = {}
+      let currentKey = null
+      const regenerate = () => {
+        if (!knownData[currentKey]) return
+        const quote = knownData[currentKey][Math.floor(Math.random() * knownData[currentKey].length)]
+        let text = quote.text
+        if (quote.link) {
+            text += ` <br><small><a href="${quote.link}">via</a></small>`
+        }
+        document.querySelector("#quote").innerHTML = text
+      }
+      const loadFromUrl = (url) => {
+        fetch(url).then(r => {
+          r.json().then(data => {
+            knownData[url] = data
+            regenerate()
+          })
+        })
+      }
+      const loadData = () => {
+        currentKey = document.querySelector("select").value
+        if (knownData[currentKey]) {
+          regenerate()
+          return
+        }
+        loadFromUrl(currentKey)
+      }
+      window.addEventListener('DOMContentLoaded', (event) => {
+        document.querySelector("#regenerate").addEventListener("click", regenerate)
+        document.querySelector("select").addEventListener("change", loadData)
+        loadData()
+      })
+    </script>
+  </head>
+  <body>
+    <main>
+      <div id="intro">
+        Let me help you with
+        <select>
+          <option value="https://raw.githubusercontent.com/rixx/fortune.rixx.de/main/data/mediocre-advice.json">mediocre advice</option>
+        </select>
+        <button id="regenerate">🔁</button>
+      </div>
+      <div id="quote">
+      </div>
+    </main>
+
+    <footer>
+      <div id="footer_inner">
+        With supersticious <a href="https://github.com/rixx/fortune.rixx.de">&#x2764;</a> by <a href="https://twitter.com/rixxtr">Tobias</a>, who likes mediocre advice &middot; <a href="https://patreon.com/rixx">patreon</a> &middot; <a href="https://ko-fi.com/rixxtr">kofi</a>
+      </div>
+    </footer>
+  </body>
+
+</html>
